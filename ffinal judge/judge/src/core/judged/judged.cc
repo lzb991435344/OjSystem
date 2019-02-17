@@ -26,6 +26,7 @@
 #define LOCKMODE (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #define STD_MB 1048576
 
+//定义判题的状态
 #define OJ_WT0 0
 #define OJ_WT1 1
 #define OJ_CI 2
@@ -39,6 +40,8 @@
 #define OJ_RE 10
 #define OJ_CE 11
 #define OJ_CO 12
+
+//全局变量
 
 static char lock_file[BUFFER_SIZE]=LOCKFILE;//全局的lockfile数组
 static char host_name[BUFFER_SIZE];
@@ -69,11 +72,13 @@ static int turbo_mode = 0;
 static bool STOP = false;
 static int DEBUG = 0;
 static int ONCE = 0;
+
+//mysql数据库相关变量
 #ifdef _mysql_h
-static MYSQL *conn;
-static MYSQL_RES *res;
-static MYSQL_ROW row;
-static char query[BUFFER_SIZE];
+static MYSQL *conn;//连接对象
+static MYSQL_RES *res;//结果集
+static MYSQL_ROW row;//行对象
+static char query[BUFFER_SIZE];//查询得到结果的字符数组
 #endif
 
 void call_for_exit(int s) {
@@ -81,6 +86,7 @@ void call_for_exit(int s) {
 	printf("Stopping judged...\n");
 }
 
+//写日志，格式化的常量指针
 void write_log(const char *fmt, ...) {
 	va_list ap;
 
@@ -91,9 +97,11 @@ void write_log(const char *fmt, ...) {
 	FILE *fp = fopen(buffer, "ae+");
 	if (fp == NULL) {
 		fprintf(stderr, "openfile error!\n");
+		//获取当前系统的用户所在目录
 		system("pwd");
 	}
 
+    //变参处理
 	va_start(ap, fmt);
 	vsprintf(buffer, fmt, ap);
 	fprintf(fp, "%s\n", buffer);
@@ -117,8 +125,10 @@ int after_equal(char * c) {
 void trim(char * c) {
 	char buf[BUFFER_SIZE];
 	char * start, *end;
+	//char *strcpy(char* dest, const char *src)
+	//把从src地址开始且含有NULL结束符的字符串复制到以dest开始的地址空间
 	strcpy(buf, c);
-	start = buf;
+	start = buf;//指针指向字符数组的首地址
 	while (isspace(*start))
 		start++;
 	end = start;
@@ -278,8 +288,10 @@ int executesql(const char * sql) {
 #endif
 
 #ifdef _mysql_h
-int init_mysql() {
-	if (conn == NULL) {
+int init_mysql() 
+{
+	if (conn == NULL) 
+	{
 		//初始化
 		conn = mysql_init(NULL);
 		//连接数据库
