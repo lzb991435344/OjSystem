@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.idea",
+    "\\judge",
+    "\\judge\\src",
+    "\\judge\\src\\core",
+    "\\judge\\src\\core\\judged",
+    "\\judge\\src\\core\\judge_client"
+  ],
+  "SelectedNode": "\\judge\\src\\core\\judged\\makefile",
+  "PreviewInSolutionExplorer": false
+}

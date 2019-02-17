@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\etc",
+    "\\src",
+    "\\src\\core",
+    "\\src\\core\\judged",
+    "\\src\\core\\judge_client",
+    "\\src\\web"
+  ],
+  "SelectedNode": "\\src\\web\\profile.php",
+  "PreviewInSolutionExplorer": false
+}
