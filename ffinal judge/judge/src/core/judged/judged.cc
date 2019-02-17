@@ -56,11 +56,14 @@ static int sleep_time;
 static int sleep_tmp;
 static int oj_tot;
 static int oj_mod;
+
+//http
 static int http_judge = 0;
 static char http_baseurl[BUFFER_SIZE];
 static char http_username[BUFFER_SIZE];
 static char http_password[BUFFER_SIZE];
 
+//redis缓存
 static int  oj_redis = 0;
 static char oj_redisserver[BUFFER_SIZE];
 static int  oj_redisport;
