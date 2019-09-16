@@ -18,6 +18,7 @@
 #define BUFFER_SIZE 1024
 //lockfile的path
 #define LOCKFILE "/var/run/judged.pid"
+
 //文件具有的权限
 //S_IRUSR 代表该文件所有者具有可读取的权限
 //S_IWUSR 代表该文件所有者具有可写入的权限
@@ -94,6 +95,7 @@ void write_log(const char *fmt, ...) {
 	va_list ap;
 
 	char buffer[4096];
+	
 	//格式化oj_home字符串写入buff
 	sprintf(buffer, "%s/log/client.log", oj_home);
 

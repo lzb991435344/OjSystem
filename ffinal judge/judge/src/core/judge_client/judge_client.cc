@@ -64,7 +64,10 @@ static char password[BUFFER_SIZE];
 static char db_name[BUFFER_SIZE];
 static char oj_home[BUFFER_SIZE];
 static char data_list[BUFFER_SIZE][BUFFER_SIZE];
-static int data_list_len=0;
+
+//文件的总长度，和缓冲区的大小作比较
+//超出缓冲区大小直接返回
+static int data_list_len = 0;
 
 static int port_number;
 static int max_running;
@@ -105,19 +108,21 @@ MYSQL *conn;//mysql数据库连接对象
 static char lang_ext[18][8] = { "c", "cc", "pas", "java", "rb", "sh", "py",
 		"php", "pl", "cs", "m", "bas", "scm","c","cc","lua","js","go" };
 
-int data_list_has(char * file){
-   for(int i=0;i<data_list_len;i++){
+int data_list_has(char * file)
+{
+   for(int i = 0; i < data_list_len; i++){
 	   //比较两个文件的地址，相同返回1
-       if(strcmp(data_list[i],file)==0)
+       if(strcmp(data_list[i],file) == 0)
 		return 1;
    }
    return 0;
 }
+
 int data_list_add(char * file){
 	//判断文件列表的总长度
    if(data_list_len < BUFFER_SIZE - 1){
 	   //复制当前文件的地址到data_list中，复制指向文件的指针变量
-	  strcpy(data_list[data_list_len],file);
+	  strcpy(data_list[data_list_len], file);
 	  data_list_len++;//列表长度加1 
    	  return 0;
    }else{
@@ -126,6 +131,7 @@ int data_list_add(char * file){
 
    }
 }
+
 //获取文件大小
 long get_file_size(const char * filename) {
 	struct stat f_stat;
@@ -135,7 +141,7 @@ long get_file_size(const char * filename) {
 	if (stat(filename, &f_stat) == -1) {
 		return 0;
 	}
-	//返回文件的大小
+	//返回文件的大小，转换一下数据格式
 	return (long) f_stat.st_size;
 }
 
@@ -143,7 +149,7 @@ long get_file_size(const char * filename) {
 void write_log(const char *_fmt, ...) {
 	va_list ap;
 	char fmt[4096];
-	strncpy(fmt,_fmt,4096);
+	strncpy(fmt, _fmt, 4096);
 	char buffer[4096];
 	sprintf(buffer, "%s/log/client.log", oj_home);
 	FILE *fp = fopen(buffer, "ae+");
@@ -190,8 +196,15 @@ int execute_cmd(const char * fmt, ...) {
 	printf("%s\n",cmd);
 
 	/**
-	功 能： 发出一个DOS命令
-    用 法： int system(char *command);
+	
+     function: int system(const char * string); 
+    system()会调用fork()产生子进程，由子进程来调用/bin/sh-c string来执行参数string字符串所代表的命令，
+    此命>令执行完后随即返回原调用的进程。在调用system()期间SIGCHLD 信号会被暂时搁置，SIGINT和SIGQUIT 
+    信号则会被忽略。 
+    返回值 =-1:出现错误 
+    =0:调用成功但是没有出现子进程 
+    >0:成功退出的子进程的id 如果
+    system()在调用/bin/sh时失败则返回127，其他失败原因返回-1。
 	*/
 	ret = system(cmd);
 	va_end(ap);//结束可变参数的获取
@@ -200,7 +213,7 @@ int execute_cmd(const char * fmt, ...) {
 }
 //定义一些全局变量
 const int call_array_size = 512;
-unsigned int call_id=0;
+unsigned int call_id = 0;
 
 unsigned int call_counter[call_array_size] = { 0 };
 static char LANG_NAME[BUFFER_SIZE];//语言包
@@ -361,6 +374,7 @@ popen（建立管道I/O）
 
 	return ret;
 }
+
 // 读取配置文件
 void init_mysql_conf() {
 	FILE *fp = NULL;
@@ -378,12 +392,12 @@ void init_mysql_conf() {
 	2、-Xmx： 表示java虚拟机堆区内存可被分配的最大上限，通常为操作系统可用内存的1/4大小。
 	但是开发过程中，通常会将 -Xms 与 -Xmx两个参数的配置相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小而浪费资源
 	*/
-	strcpy(java_xms, "-Xms32m");
+	strcpy(java_xms, "-Xms32m");//jvm初始分配的大小
 	strcpy(java_xmx, "-Xmx256m");
 	sprintf(buf, "%s/etc/judge.conf", oj_home);
 	fp = fopen("./etc/judge.conf", "re");
 	if (fp != NULL) {
-		//循环从文件中读取字符串
+		//循环从文件描述符中读取字符串，
 		while (fgets(buf, BUFFER_SIZE - 1, fp)) {
 			read_buf(buf, "OJ_HOST_NAME", host_name);
 			read_buf(buf, "OJ_USER_NAME", user_name);
@@ -411,15 +425,15 @@ void init_mysql_conf() {
 
 		}
 	}
- 	if(strcmp(http_username,"IP")==0){
+ 	if(strcmp(http_username, "IP") == 0){
                   FILE * fjobs = read_cmd_output("ifconfig|grep 'inet'|awk -F: '{printf $2}'|awk  '{printf $1}'");
                   fscanf(fjobs, "%s", http_username);
                   pclose(fjobs);
         }
-	if(strcmp(http_username,"HOSTNAME")==0){
-                  strcpy(http_username,getenv("HOSTNAME"));
+	if(strcmp(http_username, "HOSTNAME") == 0){
+                  strcpy(http_username, getenv("HOSTNAME"));
         }
-	if(turbo_mode==2) tbname="solution2";
+	if(turbo_mode == 2) tbname="solution2";
 }
 
 ///home/judge/data/1000下的文件全名 sample.in sample.out test.in test.out
@@ -504,6 +518,8 @@ void make_diff_out_simple(FILE *f1, FILE *f2, int c1, int c2, const char * path)
 	execute_cmd("echo '\n=============================='>>diff.out");
 }
 
+
+//程序运行结果和正确文件进行比较
 int compare_zoj(const char *file1, const char *file2) {
   //结果默认为AC
 	int ret = OJ_AC;
@@ -567,6 +583,7 @@ int compare_zoj(const char *file1, const char *file2) {
 		else
 			make_diff_out_simple(f1, f2, c1, c2, file1);
 	}
+	//关闭流
 	if (f1)
 		fclose(f1);
 	if (f2)
