@@ -17,6 +17,7 @@
 
 #define BUFFER_SIZE 1024
 //lockfile的path
+//单实例的守护进程
 #define LOCKFILE "/var/run/judged.pid"
 
 //文件具有的权限
